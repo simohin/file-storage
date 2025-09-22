@@ -2,14 +2,14 @@
 FROM gradle:8.14.3-jdk21-alpine AS builder
 WORKDIR /app
 
-COPY build.gradle settings.gradle gradlew ./
+COPY build.gradle settings.gradle ./
 COPY gradle ./gradle
 
-RUN ./gradlew dependencies --no-daemon || return 0
+RUN gradle dependencies --no-daemon || return 0
 
 COPY . .
 
-RUN ./gradlew clean bootJar --no-daemon
+RUN gradle clean bootJar --no-daemon
 
 # --- Stage 2: runtime ---
 FROM eclipse-temurin:21-jre-alpine
