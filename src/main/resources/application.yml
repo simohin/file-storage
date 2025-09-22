@@ -1,0 +1,68 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: file-storage-service
+  
+  data:
+    mongodb:
+      uri: mongodb://${MONGO_ROOT_USERNAME:admin}:${MONGO_ROOT_PASSWORD:password123}@${MONGO_URL:localhost}:${MONGO_PORT:27017}/${MONGO_DATABASE:filestorage}?authSource=admin
+      auto-index-creation: true
+
+  servlet:
+    multipart:
+      max-file-size: 2GB
+      max-request-size: 2GB
+      file-size-threshold: 1MB
+      location: ${java.io.tmpdir}
+  
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: NON_NULL
+
+# Swagger/OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+    display-operation-id: false
+    show-extensions: true
+    show-common-extensions: true
+    default-models-expand-depth: 1
+    default-model-expand-depth: 1
+    tags-sorter: alpha
+    operations-sorter: alpha
+    doc-expansion: none
+    filter: true
+  show-actuator: false
+
+# Application-specific configuration
+app:
+  file-storage:
+    path: ${FILE_STORAGE_PATH:./storage}
+    max-total-size: ${FILE_STORAGE_MAX_SIZE:200MB}
+    disk-space-check-enabled: ${DISK_SPACE_CHECK_ENABLED:true}
+    disk-space-threshold: ${DISK_SPACE_THRESHOLD:90}
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# Logging Configuration
+logging:
+  level:
+    com.github.simohin.file.storage: INFO
+    org.springframework.data.mongodb: INFO
+  pattern:
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss}){blue} %clr([%thread]){magenta} %clr(%-5level){highlight} %clr(%logger{36}){cyan} - %msg%n"

@@ -1,0 +1,60 @@
+# Git
+.git
+.gitignore
+.github
+
+# Documentation
+README.md
+docs/
+*.md
+
+# Gradle
+.gradle/
+gradle/wrapper/gradle-wrapper.jar
+gradlew
+gradlew.bat
+
+# Build artifacts
+build/
+target/
+out/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Test results
+test-results/
+reports/
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+
+# Application specific
+storage/
+uploads/
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+
+# CI/CD
+.github/
+
+# Security
+*.key
+*.pem
+*.crt

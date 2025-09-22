@@ -1,0 +1,54 @@
+spring:
+  application:
+    name: file-storage-test
+  main:
+    allow-bean-definition-overriding: true
+  data:
+    mongodb:
+      auto-index-creation: true
+  # MongoDB URI configuration will be provided by TestContainers via DynamicPropertySource
+
+# Test configuration
+management:
+  endpoints:
+    enabled-by-default: false
+  endpoint:
+    health:
+      enabled: true
+
+logging:
+  level:
+    com.github.simohin.file.storage: INFO
+    org.springframework.data.mongodb: WARN
+    org.testcontainers: INFO
+    org.springframework.test: WARN
+    com.mongodb: WARN
+    org.mongodb.driver: WARN
+    ROOT: WARN
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# File storage test configuration
+file-storage:
+  base-path: /tmp/test-file-storage
+  max-file-size: 10GB
+  allowed-content-types:
+    - application/pdf
+    - image/jpeg
+    - image/png
+    - text/plain
+    - application/zip
+    - application/octet-stream
+    - "*/*"  # Allow all content types in tests
+
+# Test-specific settings
+junit:
+  jupiter:
+    execution:
+      parallel:
+        enabled: false  # Disable parallel execution to avoid TestContainer conflicts
+        mode:
+          default: same_thread
+        config:
+          strategy: dynamic
+          parallelism: 1

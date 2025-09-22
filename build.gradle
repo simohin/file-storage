@@ -1,0 +1,84 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.5'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.github.simohin'
+version = '0.0.1-SNAPSHOT'
+description = 'file-storage'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // File handling
+    implementation 'org.apache.tika:tika-core:3.0.0'
+
+    // Documentation
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+
+    // Utilities
+    implementation 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // MapStruct
+    implementation 'org.mapstruct:mapstruct:1.6.3'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.3'
+
+    // Testing
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation platform('org.testcontainers:testcontainers-bom:1.20.4')
+    testImplementation 'org.testcontainers:testcontainers'
+    testImplementation 'org.testcontainers:mongodb'
+    testImplementation 'org.testcontainers:junit-jupiter'
+//    testImplementation 'de.flapdoodle.embed:de.flapdoodle.embed.mongo:4.21.0'
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+
+    // Test configuration
+    systemProperty 'spring.profiles.active', 'test'
+
+    // Disable parallel execution for TestContainers compatibility
+    maxParallelForks = 1
+
+    // Memory settings for tests
+    minHeapSize = "512m"
+    maxHeapSize = "2g"
+
+    // TestContainers configuration
+//    systemProperty 'testcontainers.reuse.enable', 'true'
+//    systemProperty 'testcontainers.docker.client.strategy', 'org.testcontainers.dockerclient.DockerClientProviderStrategy'
+//    timeout = java.time.Duration.ofMinutes(15)
+
+    // Environment variables for TestContainers
+//    environment 'TESTCONTAINERS_RYUK_DISABLED', 'true'
+
+    // JVM arguments for TestContainers
+    jvmArgs '-XX:+UseG1GC', '-XX:MaxGCPauseMillis=100'
+}
+
+// Additional task for running unit tests only (without TestContainers)
+tasks.register('unitTest', Test) {
+    useJUnitPlatform {
+        excludeTags 'integration'
+    }
+    group = 'verification'
+    description = 'Runs unit tests only (excludes integration tests requiring TestContainers)'
+}

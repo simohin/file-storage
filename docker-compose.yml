@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  file-storage:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/filedb
+      - SPRING_PROFILES_ACTIVE=development
+      - FILE_STORAGE_PATH=/app/storage
+      - FILE_STORAGE_MAX_SIZE=200MB
+      - DISK_SPACE_CHECK_ENABLED=true
+      - DISK_SPACE_THRESHOLD=90
+    volumes:
+      - storage_data:/app/storage
+    depends_on:
+      - mongodb
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  mongodb:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=filedb
+    volumes:
+      - mongodb_data:/data/db
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+volumes:
+  mongodb_data:
+    driver: local
+  storage_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind,size=200M
+      device: ./storage
